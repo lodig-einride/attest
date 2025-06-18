@@ -1,3 +1,20 @@
+const originalFunction = Function.prototype.call;
+
+Function.prototype.call = function(...args) {
+    const funcName = this.name || 'anonymous';
+    console.log(`ENTER: ${funcName}`);
+    try {
+        const result = originalFunction.apply(this, args);
+        console.log(`EXIT: ${funcName}`);
+        return result;
+    } catch (e) {
+        console.error(`ERROR in ${funcName}:`, e.message);
+        console.log(`EXIT (with error): ${funcName}`);
+        throw e;
+    }
+};
+
+
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 

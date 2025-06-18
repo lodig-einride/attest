@@ -13230,7 +13230,7 @@ class OCIImage {
             }
         }
         catch (err) {
-          console.error(JSON.stringify(error));
+          console.log(JSON.stringify(err));
             throw new error_1.OCIError({
                 message: `Error uploading artifact to container registry`,
                 cause: err,

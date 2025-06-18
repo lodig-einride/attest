@@ -1,20 +1,3 @@
-const originalFunction = Function.prototype.call;
-
-Function.prototype.call = function(...args) {
-    const funcName = this.name || 'anonymous';
-    console.log(`ENTER: ${funcName}`);
-    try {
-        const result = originalFunction.apply(this, args);
-        console.log(`EXIT: ${funcName}`);
-        return result;
-    } catch (e) {
-        console.error(`ERROR in ${funcName}:`, e.message);
-        console.log(`EXIT (with error): ${funcName}`);
-        throw e;
-    }
-};
-
-
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -13193,6 +13176,7 @@ class OCIImage {
         __classPrivateFieldSet(this, _OCIImage_credentials, creds, "f");
     }
     async addArtifact(opts) {
+      console.log('++++++++++++ addArtifact +++++++++++')
         let artifactDescriptor;
         const annotations = {
             'org.opencontainers.image.created': new Date().toISOString(),
@@ -13204,10 +13188,13 @@ class OCIImage {
             }
             // Check that the image exists
             const imageDescriptor = await __classPrivateFieldGet(this, _OCIImage_client, "f").checkManifest(opts.imageDigest);
+            console.log({imageDescriptor})
             // Upload the artifact blob
             const artifactBlob = await __classPrivateFieldGet(this, _OCIImage_client, "f").uploadBlob(opts.artifact);
+            console.log({artifactBlob})
             // Upload the empty blob (needed for the manifest config)
             const emptyBlob = await __classPrivateFieldGet(this, _OCIImage_client, "f").uploadBlob(EMPTY_BLOB);
+            console.log({emptyBlob})
             // Construct artifact manifest
             const manifest = buildManifest({
                 artifactDescriptor: { ...artifactBlob, mediaType: opts.mediaType },
@@ -13218,6 +13205,7 @@ class OCIImage {
                 },
                 annotations,
             });
+            console.log({manifest})
             // Upload artifact manifest
             artifactDescriptor = await __classPrivateFieldGet(this, _OCIImage_client, "f").uploadManifest(JSON.stringify(manifest));
             // Check to see if registry supports the referrers API. For most
@@ -13242,6 +13230,7 @@ class OCIImage {
             }
         }
         catch (err) {
+          console.error(JSON.stringify(error));
             throw new error_1.OCIError({
                 message: `Error uploading artifact to container registry`,
                 cause: err,
@@ -13539,7 +13528,9 @@ class RegistryClient {
             };
         }
         // Retrieve upload location (session ID)
+        console.log('++++++++++ Before post ++++++++++++++')
         const postResponse = await __classPrivateFieldGet(this, _RegistryClient_fetch, "f").call(this, `${__classPrivateFieldGet(this, _RegistryClient_baseURL, "f")}/v2/${__classPrivateFieldGet(this, _RegistryClient_repository, "f")}/blobs/uploads/`, { method: 'POST' }).then((0, error_1.ensureStatus)(202));
+        console.log({postResponse})
         const location = postResponse.headers.get(constants_1.HEADER_LOCATION);
         if (!location) {
             throw new Error('Missing location for blob upload');
